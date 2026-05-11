@@ -4,7 +4,7 @@ import anthropic
 # 1. 페이지 설정
 st.set_page_config(page_title="Claude AI 질문 앱", page_icon="🌸", layout="centered")
 
-# 2. 커스텀 CSS - 화사한 디자인 적용
+# 2. 커스텀 CSS
 st.markdown("""
 <style>
     /* 전체 배경 그라데이션 */
@@ -13,22 +13,19 @@ st.markdown("""
         background-attachment: fixed;
     }
     
-    /* 메인 타이틀 스타일 */
+    /* 메인 타이틀 - 검은색으로 변경 */
     .main-title {
         text-align: center;
         font-size: 2.8em;
         font-weight: 900;
-        background: linear-gradient(90deg, #e84393, #f39c12, #e74c3c, #9b59b6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        color: #1a1a1a;
         margin-bottom: 5px;
     }
 
-    /* 서브타이틀 */
+    /* 서브타이틀 - 검은색 계열로 변경 */
     .sub-title {
         text-align: center;
-        color: #636e72;
+        color: #2d2d2d;
         font-size: 1.1em;
         margin-bottom: 30px;
     }
@@ -44,11 +41,11 @@ st.markdown("""
         box-shadow: 0 8px 32px rgba(232, 67, 147, 0.1);
     }
     
-    /* 섹션 헤더 */
+    /* 섹션 헤더 - 검은색으로 변경 */
     .section-header {
         font-size: 1.3em;
         font-weight: 700;
-        color: #e84393;
+        color: #1a1a1a;
         margin-bottom: 10px;
     }
 
@@ -77,6 +74,7 @@ st.markdown("""
         background: rgba(255, 255, 255, 0.9) !important;
         font-size: 1em !important;
         padding: 12px !important;
+        color: #1a1a1a !important;
     }
     .stTextArea > div > div > textarea:focus {
         border-color: #e84393 !important;
@@ -88,6 +86,7 @@ st.markdown("""
         border-radius: 15px !important;
         border: 2px solid #f093fb !important;
         background: rgba(255, 255, 255, 0.9) !important;
+        color: #1a1a1a !important;
     }
 
     /* 말투 선택 라디오 버튼 영역 */
@@ -104,6 +103,7 @@ st.markdown("""
         border: 2px solid rgba(240, 147, 251, 0.4) !important;
         transition: all 0.2s ease !important;
         cursor: pointer !important;
+        color: #1a1a1a !important;
     }
     .stRadio > div > label:hover {
         border-color: #e84393 !important;
@@ -115,10 +115,10 @@ st.markdown("""
         background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(253, 160, 133, 0.15));
         border-radius: 20px;
         padding: 25px;
-        border-left: 5px solid #e84393;
         border: 2px solid rgba(232, 67, 147, 0.3);
         box-shadow: 0 8px 32px rgba(232, 67, 147, 0.1);
         margin-top: 15px;
+        color: #1a1a1a;
     }
 
     /* 메트릭 커스텀 스타일 */
@@ -128,6 +128,12 @@ st.markdown("""
         padding: 15px;
         border: 2px solid rgba(162, 155, 254, 0.4);
         box-shadow: 0 4px 15px rgba(162, 155, 254, 0.2);
+    }
+
+    /* 메트릭 글씨 검은색 */
+    [data-testid="stMetric"] label,
+    [data-testid="stMetric"] div {
+        color: #1a1a1a !important;
     }
 
     /* 구분선 스타일 */
@@ -145,9 +151,23 @@ st.markdown("""
         padding: 12px 18px;
         border: 1px dashed rgba(162, 155, 254, 0.6);
         font-size: 0.9em;
-        color: #636e72;
+        color: #1a1a1a;
         margin-top: 10px;
-        font-style: italic;
+    }
+
+    /* 전체 일반 텍스트 검은색 */
+    .stMarkdown, p, span, div, label {
+        color: #1a1a1a;
+    }
+
+    /* caption 텍스트 */
+    .stCaption {
+        color: #3d3d3d !important;
+    }
+
+    /* 경고/성공 메시지 텍스트 */
+    .stAlert p {
+        color: #1a1a1a !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -168,7 +188,7 @@ except KeyError:
     st.error("🔑 API 키가 설정되지 않았습니다. Streamlit Cloud의 'Secrets' 설정에서 `ANTHROPIC_API_KEY`를 추가해주세요.")
     st.stop()
 
-# 5. 말투 설정 딕셔너리 (시스템 프롬프트 포함)
+# 5. 말투 설정 딕셔너리
 TONE_OPTIONS = {
     "🤝 친근한 친구": {
         "description": "편하고 친근하게 반말로 대화해요",
@@ -244,7 +264,7 @@ selected_model_label = st.selectbox(
 selected_model_id = model_options[selected_model_label]
 st.markdown('</div>', unsafe_allow_html=True)
 
-# 7. 말투 선택 카드 ⭐ 새로 추가된 기능!
+# 7. 말투 선택 카드
 st.markdown('<div class="card-box">', unsafe_allow_html=True)
 st.markdown('<div class="section-header">🎭 AI 말투 선택</div>', unsafe_allow_html=True)
 st.caption("AI가 어떤 스타일로 답변해줬으면 좋겠나요?")
@@ -288,22 +308,20 @@ if ask_button:
     else:
         with st.spinner(f"🌈 [{selected_tone}] 말투로 답변을 만들고 있어요... 잠깐만요!"):
             try:
-                # 선택된 말투의 시스템 프롬프트 가져오기
                 system_prompt = tone_info["system_prompt"]
 
                 response = client.messages.create(
                     model=selected_model_id,
                     max_tokens=4096,
-                    system=system_prompt,   # ⭐ 말투 시스템 프롬프트 적용
+                    system=system_prompt,
                     messages=[
                         {"role": "user", "content": user_input}
                     ]
                 )
 
-                # 구분선
                 st.markdown("<hr>", unsafe_allow_html=True)
 
-                # 적용된 말투 표시
+                # 적용된 말투 표시 배지
                 st.markdown(f"""
                 <div style="text-align:center; margin-bottom:10px;">
                     <span style="background: linear-gradient(90deg,#f093fb,#f5576c);
@@ -320,7 +338,6 @@ if ask_button:
                 st.write(response.content[0].text)
                 st.markdown('</div>', unsafe_allow_html=True)
 
-                # 구분선
                 st.markdown("<hr>", unsafe_allow_html=True)
 
                 # 토큰 사용량
@@ -330,7 +347,6 @@ if ask_button:
                 col2.metric("📤 출력 토큰", f"{response.usage.output_tokens:,} 개")
                 col3.metric("🔢 총합", f"{response.usage.input_tokens + response.usage.output_tokens:,} 개")
 
-                # 완료 메시지
                 st.success(f"🎉 {selected_tone} 말투로 답변이 완성되었어요! 도움이 되셨으면 좋겠어요 💖")
 
             except Exception as e:
@@ -338,7 +354,7 @@ if ask_button:
 
 # 10. 푸터
 st.markdown("""
-<div style="text-align:center; margin-top:40px; color:#b2bec3; font-size:0.85em;">
+<div style="text-align:center; margin-top:40px; color:#3d3d3d; font-size:0.85em;">
     🌸 Made with ❤️ using Streamlit & Claude AI 🌸
 </div>
 """, unsafe_allow_html=True)
